@@ -9,6 +9,9 @@
 #   apagar com.ejemplo.app                     la app se queda apagada (también acepta «off»)
 #   global window_animation_scale 0            un ajuste (global, secure o system)
 #   device_config activity_manager max_cached_processes 4
+#
+# Con --fix, antes de cambiar algo se anota cómo estaba en <lista>.antes (solo la primera vez, así
+# guarda el valor de fábrica). undo.sh <IP_TV> <lista> usa ese archivo para regresar justo eso.
 set -e
 
 TARGET="$1"; FIX=; LIST=
@@ -58,16 +61,24 @@ else
 fi
 
 if [ -n "$LIST" ]; then
+  ANTES=$LIST.antes
+  # Anota cómo estaba algo antes de cambiarlo, salvo que ya esté anotado. La clave es todo menos el valor.
+  save() { # clave, valor anterior (vacío para una app)
+    [ -f "$ANTES" ] && awk -v k="$1" '$0 == k || index($0, k " ") == 1 { f = 1 } END { exit !f }' "$ANTES" && return
+    printf '%s\n' "$1${2:+ $2}" >> "$ANTES"
+  }
   echo "Tus cambios ($LIST)"
   grep -v '^[[:space:]]*#' "$LIST" | grep -v '^[[:space:]]*$' | while read -r kind a b c; do
     case "$kind" in
       off|apagar)
-        if installed "$a"; then check "$a sigue apagada" "is_off $a" "sh_tv pm disable-user --user 0 $a"
+        if installed "$a"; then check "$a sigue apagada" "is_off $a" "save 'apagar $a' && sh_tv pm disable-user --user 0 $a"
         else echo "  no está  $a (no instalada)"; fi ;;
       global|secure|system)
-        check "$kind $a = $b" "[ \"\$(sh_tv settings get $kind $a)\" = \"$b\" ]" "sh_tv settings put $kind $a $b" ;;
+        check "$kind $a = $b" "[ \"\$(sh_tv settings get $kind $a)\" = \"$b\" ]" \
+          "save '$kind $a' \"\$(sh_tv settings get $kind $a)\" && sh_tv settings put $kind $a $b" ;;
       device_config)
-        check "$a/$b = $c" "[ \"\$(sh_tv device_config get $a $b)\" = \"$c\" ]" "sh_tv device_config put $a $b $c" ;;
+        check "$a/$b = $c" "[ \"\$(sh_tv device_config get $a $b)\" = \"$c\" ]" \
+          "save 'device_config $a $b' \"\$(sh_tv device_config get $a $b)\" && sh_tv device_config put $a $b $c" ;;
       *) echo "  ?         no se entiende: $kind $a $b $c" ;;
     esac
   done > "${TMPDIR:-/tmp}/tvcheck.$$" || true

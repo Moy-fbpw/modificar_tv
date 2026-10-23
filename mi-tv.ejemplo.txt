@@ -1,0 +1,17 @@
+# Ejemplo de lista de cambios para check.sh. Cópiala como mi-tv.txt y ajústala:
+#   cp mi-tv.ejemplo.txt mi-tv.txt
+#   sh check.sh <IP_TV> --fix mi-tv.txt     aplica los cambios y anota cómo estaba todo en mi-tv.txt.antes
+#   sh undo.sh <IP_TV> mi-tv.txt            regresa todo a como estaba
+# Una línea por cambio. # inicia un comentario.
+
+# Sin animaciones: los menús responden al instante.
+global window_animation_scale 0
+global transition_animation_scale 0
+global animator_duration_scale 0
+
+# Suspender la TV tras 30 minutos sin uso (en milisegundos). En Android TV vive en «secure»;
+# revisa que tu TV lo tenga con: adb shell settings get secure sleep_timeout
+# secure sleep_timeout 1800000
+
+# Apps que apagaste, una por línea, conforme salgan bien las tandas (ver docs/debloat.md):
+# apagar com.google.android.tvrecommendations

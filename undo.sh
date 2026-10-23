@@ -1,8 +1,14 @@
 #!/bin/sh
 # Quita la pantalla de inicio y vuelve a encender la pantalla de inicio propia de la TV.
-# Uso: sh undo.sh <IP_TV>
+#   sh undo.sh <IP_TV>              quita la pantalla de inicio
+#   sh undo.sh <IP_TV> mi-tv.txt    regresa solo tus cambios, como los anotó check.sh --fix en mi-tv.txt.antes
+#                                   (no toca la pantalla de inicio ni las apps que la TV ya traía apagadas)
 set -e
-[ -n "$1" ] || { echo "Uso: sh undo.sh <IP_TV>" >&2; exit 1; }
+[ -n "$1" ] || { echo "Uso: sh undo.sh <IP_TV> [mi-tv.txt]" >&2; exit 1; }
+MINE=$2
+[ -z "$MINE" ] || [ -f "$MINE.antes" ] || {
+  echo "No existe $MINE.antes: no hay nada anotado que deshacer." >&2
+  echo "Ese archivo lo crea check.sh --fix $MINE al aplicar tus cambios." >&2; exit 1; }
 case "$1" in
   *.*.*.*:*) TV=$1 ;;
   *.*.*.*)   TV=$1:5555 ;;
@@ -34,6 +40,34 @@ turn_on() {
     *) echo "No se pudo revisar que $1 esté encendida otra vez." >&2; failed=1 ;;
   esac
 }
+
+# Tus cambios: cada línea de .antes dice cómo estaba algo. «null» significa que no tenía valor propio.
+if [ -n "$MINE" ]; then
+  sh_tv() { adb -s "$TV" shell "$@" </dev/null | tr -d '\r'; } # si no, adb se comería el archivo de abajo
+  # El orden al revés deshace primero lo último que se cambió.
+  sed '1!G;h;$!d' "$MINE.antes" > "${TMPDIR:-/tmp}/tvundo.$$"
+  while read -r kind a b c; do
+    case "$kind" in
+      apagar) turn_on "$a" </dev/null ;;
+      global|secure|system)
+        if [ "$b" = null ]; then sh_tv settings delete "$kind" "$a" >/dev/null; else sh_tv settings put "$kind" "$a" "$b"; fi
+        if [ "$(sh_tv settings get "$kind" "$a")" = "$b" ]; then echo "$kind $a regresó a $b"
+        else echo "No se pudo regresar $kind $a a $b." >&2; failed=1; fi ;;
+      device_config)
+        if [ "$c" = null ]; then sh_tv device_config delete "$a" "$b" >/dev/null; else sh_tv device_config put "$a" "$b" "$c"; fi
+        if [ "$(sh_tv device_config get "$a" "$b")" = "$c" ]; then echo "$a/$b regresó a $c"
+        else echo "No se pudo regresar $a/$b a $c." >&2; failed=1; fi ;;
+      *) echo "No se entiende esta línea de $MINE.antes: $kind $a $b $c" >&2; failed=1 ;;
+    esac
+  done < "${TMPDIR:-/tmp}/tvundo.$$"
+  rm -f "${TMPDIR:-/tmp}/tvundo.$$"
+  if [ -n "$failed" ]; then echo "Algunas cosas no regresaron. Se conserva $MINE.antes para intentarlo otra vez." >&2; exit 1; fi
+  # Ya regresó todo: el archivo se renombra para que una próxima limpieza anote desde cero.
+  mv "$MINE.antes" "$MINE.antes.deshecho"
+  echo "Listo. Tus cambios de $MINE regresaron a como estaban."
+  echo "La pantalla de inicio no se tocó. Para quitarla: sh undo.sh $1"
+  exit 0
+fi
 
 # Vuelve a encender lo que install.sh apagó, antes de quitar esta pantalla de inicio.
 # END marca que se leyó completa; si no hay lista, también está bien.

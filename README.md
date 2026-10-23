@@ -14,7 +14,9 @@ Uso personal. Basado en el proyecto tv-detox (commit `2ac1ee6`, versión 1.5.3),
 | `build.sh` | Compila la pantalla de inicio (`out/tvhome.apk`). |
 | `install.sh` | Instala la pantalla de inicio y la deja como predeterminada. |
 | `undo.sh` | Quita la pantalla de inicio y regresa la original. |
-| `check.sh` | Revisa que una actualización de la TV no haya deshecho la limpieza. |
+| `check.sh` | Aplica tu lista de cambios y revisa que una actualización de la TV no la haya deshecho. |
+| `medir.sh` | Mide memoria libre, procesos, arranque y cuánto tardan en abrir tus apps. Guarda cada medición en `mediciones.tsv`. |
+| `mi-tv.ejemplo.txt` | Plantilla de tu lista de cambios, con los ajustes de rendimiento típicos. |
 | `apps.txt` | Apps de la fila principal de la pantalla de inicio. |
 | `src/`, `AndroidManifest.xml` | Código de la pantalla de inicio. No pide permiso de internet. |
 
@@ -48,14 +50,27 @@ sh candidates.sh <IP_TV>
 
 No cambia nada. Guarda la salida: es la base para decidir.
 
-### 4. Limpia por tandas
-
-Sigue [docs/debloat.md](docs/debloat.md): apaga de 5 a 10 apps, reinicia y prueba la TV. Anota cada
-cambio en una lista (por ejemplo `mi-tv.txt`) con el formato de `check.sh`:
+Toma la medición de partida (reinicia la TV, así que tarda unos minutos):
 
 ```
-apagar com.ejemplo.app
-global window_animation_scale 0
+sh medir.sh <IP_TV> "antes" --arranque
+```
+
+### 4. Limpia por tandas
+
+Sigue [docs/debloat.md](docs/debloat.md): apaga de 5 a 10 apps, reinicia y prueba la TV. Lleva tus
+cambios en una lista, empezando por la plantilla:
+
+```
+cp mi-tv.ejemplo.txt mi-tv.txt
+```
+
+Agrega cada tanda a `mi-tv.txt` (`apagar com.ejemplo.app`) y aplícala con `check.sh`. Antes de cambiar
+algo, anota cómo estaba en `mi-tv.txt.antes`; no borres ese archivo, es tu forma de deshacer:
+
+```
+sh check.sh <IP_TV> --fix mi-tv.txt
+sh medir.sh <IP_TV> "tanda 1" --arranque
 ```
 
 O pídeselo a Claude Code con este prompt:
@@ -69,9 +84,10 @@ Mi TV es una <marca y modelo>. Usa los scripts de este repo.
 2. Conéctate a la TV por la red. Guíame en lo que tenga que hacer en la TV.
 3. Ejecuta candidates.sh y, antes de cambiar nada, lista cada app en
    lenguaje normal: segura de apagar, necesaria para la TV y apps que uso.
-   Revisa la memoria libre.
+   Toma la medición de partida con medir.sh --arranque.
 4. Pregúntame antes de cada cambio. Apaga en vez de desinstalar.
-   Anota cada cambio en mi-tv.txt con el formato de check.sh.
+   Anota cada cambio en mi-tv.txt y aplícalo solo con
+   check.sh --fix mi-tv.txt, para que quede anotado en mi-tv.txt.antes.
 5. Nunca apagues: servicios de Google Play (com.google.android.gms),
    Google Play, Configuración, la interfaz del sistema, apps de
    configuración inicial, el teclado, Bluetooth, mis entradas HDMI,
@@ -82,7 +98,7 @@ Mi TV es una <marca y modelo>. Usa los scripts de este repo.
    protector de pantalla encendido.
 7. Espera 30 segundos después del último cambio, reinicia la TV una
    vez y revisa que arranque normal antes de decir que terminaste.
-   Muéstrame la memoria libre antes y después.
+   Muéstrame la tabla de mediciones.tsv antes y después.
 8. Al final, recuérdame apagar la depuración en la TV.
 ```
 
@@ -118,12 +134,9 @@ sh check.sh <IP_TV> --fix mi-tv.txt    # también revisa tu lista de cambios
 ## Deshacer
 
 ```
-sh undo.sh <IP_TV>
+sh undo.sh <IP_TV> mi-tv.txt    # regresa tus cambios, según mi-tv.txt.antes
+sh undo.sh <IP_TV>              # quita la pantalla de inicio nueva y regresa la original
 ```
 
-Regresa la pantalla de inicio original y quita la nueva. Las apps que apagaste a mano se regresan
-con `adb shell pm enable <paquete>`, o todas de una vez:
-
-```
-for p in $(adb shell pm list packages -d | tr -d '\r' | sed 's/package://'); do adb shell pm enable "$p"; done
-```
+Con tu lista, `undo.sh` solo regresa lo que `check.sh --fix` cambió: no enciende las apps que la TV ya
+traía apagadas de fábrica. Una app suelta se regresa con `adb shell pm enable <paquete>`.
