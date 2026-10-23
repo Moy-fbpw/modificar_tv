@@ -92,8 +92,8 @@ sistema o de energía. No hay paquete que apagar: cámbialo con el control remot
 
 ## Referencia
 
-> Las listas vienen de TVs TCL y Google TV. Para Hisense todavía no hay lista: se arma con la
-> salida real de `candidates.sh` en tu TV.
+> Las listas vienen de TVs TCL y Google TV. Para Hisense hay pistas al final de esta página, todavía
+> sin confirmar en tu TV.
 
 ### Nunca apagar
 
@@ -147,3 +147,44 @@ Apágalas solo si no usas la función:
 Los fabricantes cambian y agregan nombres a estas listas, así que tómalas como pistas fuertes,
 no como verdad absoluta. Si tienes duda, déjala encendida: una TV lenta es mejor que una TV que
 no puedes usar.
+
+## Hisense (pistas por confirmar)
+
+Recopilado en octubre de 2026 de listas comunitarias para Hisense con Android TV 9 (HiSmartTV A4),
+Android 11 con Google TV (`songshan`) y Google TV 12 (FFM). Los nombres cambian entre modelos y
+firmware: `candidates.sh` todavía no las conoce por nombre, y solo pasan a las listas de arriba
+cuando se prueben en tu TV. Si tu Hisense dice VIDAA, no es Android y nada de esto aplica.
+
+### Nunca apagar (Hisense)
+
+| paquete | qué es |
+| --- | --- |
+| `com.hisense.tv.smartsense`, `com.vt.tv.smartsense.ui`, `com.vt.tv.aiot` | familia smartsense / AIoT. En varios modelos, apagarla mandó la TV a Android Recovery al reiniciar |
+| `com.hisense.tv.hitvinput`, `com.vt.tv.input` | entradas de TV (HDMI y sintonizador) |
+| `com.mediatek.*` | piezas del chip MediaTek. Ninguna lista las toca |
+| `com.jamdeo.tv.livetv`, `com.jamdeo.tv.vod` | TV en vivo y launcher de fábrica en algunos modelos |
+| `com.google.android.tvlauncher` | launcher original: es el respaldo de `undo.sh` |
+
+### Comúnmente apagadas en Hisense
+
+| paquete | qué es |
+| --- | --- |
+| `com.hisense.app.logreport` | envía registros del sistema a Hisense |
+| `com.hisense.service.message` | avisos y mensajes promocionales de Hisense |
+| `com.hisense.storemode`, `fusion.android.tv.demo` | modo tienda y video de demostración |
+| `com.mstar.android.tv.disclaimercustomization` | pantalla de aviso del modo tienda |
+| `com.hisense.tv.b2b` | modo hotel o negocio |
+| `android.autoinstalls.config.hisense.xiaoyushan` | instala apps de socios sin preguntar |
+| `net.vidaatv.hisense.android.tv` | canales gratis con anuncios de VIDAA |
+| `com.google.android.leanbacklauncher.recommendations` | recomendaciones del launcher |
+| `com.google.android.tv.bugreportsender` | envía reportes de fallas a Google |
+| `com.hisense.hibrowser` | navegador de Hisense |
+
+### Depende de ti (Hisense)
+
+| paquete | función |
+| --- | --- |
+| `com.hisense.evservice` | reconoce lo que ves para anuncios (ACR). También vigila las entradas HDMI: después de apagarlo, prueba cada HDMI |
+| `com.hisense.tv.ota`, `com.hisense.remoteupgrade` | actualizaciones del sistema. Apagarlas evita que una actualización deshaga la limpieza, pero también corta los parches |
+| `com.jamdeo.tv.mediacenter` | reproductor de USB y DLNA |
+| `com.vt.miracast` | duplicar la pantalla del celular (Miracast) |

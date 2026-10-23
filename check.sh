@@ -47,7 +47,10 @@ for p in $turned_off; do
 done
 # En Google TV, install.sh deja encendida su pantalla de inicio salvo con GOOGLE_TV=1, así que es normal que Inicio la abra.
 LAUNCHERX=com.google.android.apps.tv.launcherx
-if [ "$(home)" != "$ME" ] && installed $LAUNCHERX && ! is_off $LAUNCHERX && ! echo "$turned_off" | grep -qx $LAUNCHERX; then
+# Si solo se hizo la limpieza (o se ejecutó undo.sh), no hay pantalla de inicio que revisar.
+if ! installed com.ansub.tvhome; then
+  echo "  omitido   La pantalla de inicio nueva no está instalada"
+elif [ "$(home)" != "$ME" ] && installed $LAUNCHERX && ! is_off $LAUNCHERX && ! echo "$turned_off" | grep -qx $LAUNCHERX; then
   echo "  bien      Inicio abre la pantalla de inicio de Google TV (se dejó encendida, como dijo install.sh; GOOGLE_TV=1 la apaga)"
 else
   check "Inicio abre esta pantalla de inicio" '[ "$(home)" = "$ME" ]' \
