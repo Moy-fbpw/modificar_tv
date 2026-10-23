@@ -32,10 +32,21 @@ javac -nowarn -Xlint:-options -encoding UTF-8 -source 1.8 -target 1.8 -bootclass
 cp out/base.apk out/unsigned.apk; (cd out/dex && zip -q ../unsigned.apk classes.dex)
 "$BT/zipalign" -f 4 out/unsigned.apk out/aligned.apk
 
-# La llave de firma se crea en la primera compilación. Conserva key.jks: las actualizaciones deben
-# firmarse con la misma llave. (Para otra llave: define KEYSTORE y KEYSTORE_PASS.)
-KS=${KEYSTORE:-key.jks}; PASS=${KEYSTORE_PASS:-tvhome123}
-[ -f "$KS" ] || keytool -genkeypair -keystore "$KS" -storepass "$PASS" -keypass "$PASS" -alias tvhome \
-  -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=tvhome" >/dev/null 2>&1
-"$BT/apksigner" sign --ks "$KS" --ks-pass "pass:$PASS" --out out/tvhome.apk out/aligned.apk
+# La llave de firma se crea en la primera compilación, con una contraseña al azar guardada en key.pass.
+# Conserva key.jks y key.pass: las actualizaciones deben firmarse con la misma llave.
+# (Para otra llave: define KEYSTORE y KEYSTORE_PASS.)
+KS=${KEYSTORE:-key.jks}; PASS_FILE=key.pass
+if [ -n "$KEYSTORE_PASS" ]; then PASS=$KEYSTORE_PASS
+elif [ -f "$PASS_FILE" ]; then PASS=$(cat "$PASS_FILE")
+elif [ ! -f "$KS" ]; then
+  PASS=$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')
+  (umask 077; printf '%s\n' "$PASS" > "$PASS_FILE")
+else
+  echo "Existe $KS pero no su contraseña. Define KEYSTORE_PASS o crea $PASS_FILE con ella." >&2; exit 1
+fi
+# La contraseña viaja por una variable de entorno, no en la línea de comandos (ahí la ve cualquier proceso).
+export TVHOME_KS_PASS="$PASS"
+[ -f "$KS" ] || keytool -genkeypair -keystore "$KS" -storepass:env TVHOME_KS_PASS -keypass:env TVHOME_KS_PASS \
+  -alias tvhome -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=tvhome" >/dev/null 2>&1
+"$BT/apksigner" sign --ks "$KS" --ks-pass env:TVHOME_KS_PASS --out out/tvhome.apk out/aligned.apk
 echo "Listo: out/tvhome.apk"

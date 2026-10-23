@@ -97,6 +97,10 @@ sh install.sh <IP_TV> "" "bluetooth,sound,picture"      # accesos junto al reloj
 
 En Android TV, `install.sh` te pregunta antes de apagar la pantalla de inicio original.
 
+`install.sh` no descarga nada: si no existe `out/tvhome.apk`, te pide compilarlo. La primera vez,
+`build.sh` crea la llave de firma `key.jks` con una contraseña al azar en `key.pass`. Respalda los
+dos archivos (no se suben a git): sin ellos, la siguiente versión no se instala encima de la anterior.
+
 ### 6. Apaga la depuración
 
 En **Opciones para desarrolladores**, apaga la depuración por USB y por red. Si se queda encendida,

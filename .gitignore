@@ -1,5 +1,6 @@
 out/
 key.jks
+key.pass
 *.apk
 .DS_Store
 .idea

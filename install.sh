@@ -8,7 +8,7 @@
 # En Google TV (Chromecast con Google TV y otros) se deja encendida la pantalla de inicio de la TV.
 # GOOGLE_TV=1 la apaga de todos modos; hazlo solo si puedes reconectarte por USB o por el puerto 5555.
 #
-# Usa out/tvhome.apk si ya lo compilaste; si no, descarga la última versión publicada.
+# Instala out/tvhome.apk, que se compila con build.sh. No descarga nada de internet.
 set -e
 cd "$(dirname "$0")"
 
@@ -36,11 +36,7 @@ case "$state" in
 esac
 
 APK=out/tvhome.apk
-if [ ! -f "$APK" ]; then
-  APK=$(mktemp -d)/tvhome.apk
-  echo "Descargando la pantalla de inicio…"
-  curl -fsSL -o "$APK" https://github.com/Ansub/tv-detox/releases/latest/download/tvhome.apk
-fi
+[ -f "$APK" ] || { echo "No existe $APK. Compílalo primero con: sh build.sh" >&2; exit 1; }
 
 echo "Instalando… Si la TV muestra un aviso de Google Play Protect, síguelo en la TV para permitir la instalación."
 if ! out=$(adb -s "$TV" install -r "$APK" 2>&1); then
