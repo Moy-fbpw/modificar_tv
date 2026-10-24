@@ -15,7 +15,7 @@ Uso personal. Basado en el proyecto tv-detox (commit `2ac1ee6`, versión 1.5.3),
 | `install.sh` | Instala la pantalla de inicio y la deja como predeterminada. |
 | `undo.sh` | Quita la pantalla de inicio y regresa la original. |
 | `check.sh` | Aplica tu lista de cambios y revisa que una actualización de la TV no la haya deshecho. |
-| `medir.sh` | Mide memoria libre, procesos, arranque y cuánto tardan en abrir tus apps. Guarda cada medición en `mediciones.tsv`. |
+| `medir.sh` | Mide memoria libre, procesos, apps que arrancan solas, arranque, despertar de la suspensión y cuánto tardan en abrir tus apps. Guarda cada medición en `mediciones.tsv`. |
 | `mi-tv.ejemplo.txt` | Plantilla de tu lista de cambios, con los ajustes de rendimiento típicos. |
 | `apps.txt` | Apps de la fila principal de la pantalla de inicio. |
 | `src/`, `AndroidManifest.xml` | Código de la pantalla de inicio. No pide permiso de internet. |
@@ -50,11 +50,13 @@ sh candidates.sh <IP_TV>
 
 No cambia nada. Guarda la salida: es la base para decidir.
 
-Toma la medición de partida (reinicia la TV, así que tarda unos minutos):
+Toma la medición de partida. Reinicia la TV y luego la suspende un minuto, así que tarda unos minutos:
 
 ```
-sh medir.sh <IP_TV> "antes" --arranque
+sh medir.sh <IP_TV> "antes" --arranque --despertar
 ```
+
+Si la TV corta la red al suspenderse, `medir.sh` lo avisa: eso ya explica parte de la espera al despertar.
 
 ### 4. Limpia por tandas
 
@@ -70,7 +72,7 @@ algo, anota cómo estaba en `mi-tv.txt.antes`; no borres ese archivo, es tu form
 
 ```
 sh check.sh <IP_TV> --fix mi-tv.txt
-sh medir.sh <IP_TV> "tanda 1" --arranque
+sh medir.sh <IP_TV> "tanda 1" --arranque --despertar
 ```
 
 O pídeselo a Claude Code con este prompt:
@@ -84,7 +86,7 @@ Mi TV es una <marca y modelo>. Usa los scripts de este repo.
 2. Conéctate a la TV por la red. Guíame en lo que tenga que hacer en la TV.
 3. Ejecuta candidates.sh y, antes de cambiar nada, lista cada app en
    lenguaje normal: segura de apagar, necesaria para la TV y apps que uso.
-   Toma la medición de partida con medir.sh --arranque.
+   Toma la medición de partida con medir.sh --arranque --despertar.
 4. Pregúntame antes de cada cambio. Apaga en vez de desinstalar.
    Anota cada cambio en mi-tv.txt y aplícalo solo con
    check.sh --fix mi-tv.txt, para que quede anotado en mi-tv.txt.antes.
