@@ -49,6 +49,10 @@ if [ -n "$MINE" ]; then
   while read -r kind a b c; do
     case "$kind" in
       apagar) turn_on "$a" </dev/null ;;
+      quitar)
+        sh_tv cmd package install-existing "$a" >/dev/null
+        if sh_tv pm list packages "$a" | grep -qx "package:$a"; then echo "$a instalada otra vez"
+        else echo "No se pudo volver a instalar $a." >&2; failed=1; fi ;;
       global|secure|system)
         if [ "$b" = null ]; then sh_tv settings delete "$kind" "$a" >/dev/null; else sh_tv settings put "$kind" "$a" "$b"; fi
         if [ "$(sh_tv settings get "$kind" "$a")" = "$b" ]; then echo "$kind $a regresó a $b"

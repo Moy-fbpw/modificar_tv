@@ -7,6 +7,9 @@
 #
 # La lista tiene un cambio por línea (# inicia un comentario):
 #   apagar com.ejemplo.app                     la app se queda apagada (también acepta «off»)
+#   quitar com.ejemplo.app                     se desinstala solo para tu usuario; para apps que el sistema
+#                                              vuelve a encender. Se regresa con undo.sh o con
+#                                              adb shell cmd package install-existing com.ejemplo.app
 #   global window_animation_scale 0            un ajuste (global, secure o system)
 #   device_config activity_manager max_cached_processes 4
 #
@@ -73,6 +76,10 @@ if [ -n "$LIST" ]; then
       off|apagar)
         if installed "$a"; then check "$a sigue apagada" "is_off $a" "save 'apagar $a' && sh_tv pm disable-user --user 0 $a"
         else echo "  no está  $a (no instalada)"; fi ;;
+      quitar)
+        if sh_tv pm list packages -u "$a" | grep -qx "package:$a"; then
+          check "$a sigue quitada" "! installed $a" "save 'quitar $a' && sh_tv pm uninstall -k --user 0 $a"
+        else echo "  no está  $a (no existe en esta TV)"; fi ;;
       global|secure|system)
         check "$kind $a = $b" "[ \"\$(sh_tv settings get $kind $a)\" = \"$b\" ]" \
           "save '$kind $a' \"\$(sh_tv settings get $kind $a)\" && sh_tv settings put $kind $a $b" ;;

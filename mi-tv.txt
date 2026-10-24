@@ -17,7 +17,8 @@ secure screensaver_components com.android.dreams.basic/.Colors
 # secure sleep_timeout 1800000
 
 # Tanda 1 (2026-10-23): relleno de Google y Hisense, y apps viejas.
-# apagar com.google.android.tvrecommendations   (no se queda: el sistema la vuelve a encender al arrancar)
+# Apagada no se queda (el sistema la vuelve a encender al arrancar), así que se quita. (Tanda 3.)
+quitar com.google.android.tvrecommendations
 apagar com.google.android.backdrop
 apagar com.google.android.feedback
 apagar com.google.android.play.games
@@ -30,7 +31,8 @@ apagar com.hbo.hbonow
 apagar com.disney.starplus
 
 # Tanda 2 (2026-10-23): apps que no uso. Netflix y Spotify se encienden en Configuración → Apps si hacen falta.
-# apagar com.netflix.ninja   (no se queda: NetflixObserver de MediaTek la vuelve a encender al arrancar)
+# Apagada no se queda (NetflixObserver de MediaTek la vuelve a encender), así que se quita. (Tanda 3.)
+quitar com.netflix.ninja
 apagar com.spotify.tv.android
 apagar com.google.android.youtube.tvmusic
 apagar com.dazn

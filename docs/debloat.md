@@ -167,7 +167,9 @@ cuando se prueben en tu TV. Si tu Hisense dice VIDAA, no es Android y nada de es
 
 Confirmado en una 40A45H (Android TV 14, firmware `huashan`, MT5867): no trae smartsense/AIoT, y
 `com.netflix.ninja` y `com.google.android.tvrecommendations` se vuelven a encender solas en cada arranque
-(a Netflix la reactiva `NetflixObserver`, dentro de `com.mediatek.tv.service`). No vale la pena apagarlas.
+(a Netflix la reactiva `NetflixObserver`, dentro de `com.mediatek.tv.service`). Sin root (y esta TV no se
+puede rootear: arranque bloqueado y sin desbloqueo OEM) se quitan con `quitar` en tu lista: se desinstalan
+solo para tu usuario y `undo.sh` las regresa.
 
 ### Comúnmente apagadas en Hisense
 
