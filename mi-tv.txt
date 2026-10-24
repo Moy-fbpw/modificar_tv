@@ -40,3 +40,12 @@ apagar com.viki.android
 apagar com.tencent.qqlivei18n
 apagar com.clearchannel.iheartradio.tv
 apagar com.uscreen.karaokeondemand
+
+# Tanda 4 (2026-10-23): sin segundo plano para apps que uso poco; canales gratis con anuncios de Hisense.
+restringir com.cbs.ca
+restringir com.wbd.stream
+# Apagada no se queda (Google la vuelve a encender), así que se quita.
+quitar com.google.android.katniss
+restringir com.google.android.apps.mediashell
+# Apagada no se queda (el sistema la vuelve a encender), así que se quita.
+quitar com.cltv.fast

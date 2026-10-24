@@ -12,6 +12,7 @@ final class Strings {
         "Settings", "Add app", "Network", "Offline", "Sound", "Picture",
         "Move", "Replace", "Remove from home", "Uninstall", "App info",
         "Use the arrows to move it, then press OK", "Every app is already here", "Add an app", "Replace %s", "Wallpaper", "TV settings", "Brightness",
+        "Free RAM",
     };
 
     // Keyed by language ("de"), or language-country ("zh-TW") where a country writes it differently.
@@ -31,6 +32,7 @@ final class Strings {
             "Configuración", "Agregar app", "Red", "Sin conexión", "Sonido", "Imagen",
             "Mover", "Reemplazar", "Quitar del inicio", "Desinstalar", "Info. de la app",
             "Usa las flechas para moverla y presiona OK", "Todas las apps ya están aquí", "Agregar una app", "Reemplazar %s", "Fondo de pantalla", "Configuración de la TV", "Brillo",
+            "RAM libre",
         });
         LANGS.put("fr", new String[] {
             "Paramètres", "Ajouter une app", "Réseau", "Hors ligne", "Son", "Image",

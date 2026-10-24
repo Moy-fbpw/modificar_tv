@@ -49,6 +49,11 @@ if [ -n "$MINE" ]; then
   while read -r kind a b c; do
     case "$kind" in
       apagar) turn_on "$a" </dev/null ;;
+      restringir)
+        sh_tv cmd appops set "$a" RUN_ANY_IN_BACKGROUND default
+        if sh_tv cmd appops get "$a" RUN_ANY_IN_BACKGROUND | grep -q ignore; then
+          echo "No se pudo quitar la restricción de $a." >&2; failed=1
+        else echo "$a sin restricción otra vez"; fi ;;
       quitar)
         sh_tv cmd package install-existing "$a" >/dev/null
         if sh_tv pm list packages "$a" | grep -qx "package:$a"; then echo "$a instalada otra vez"
@@ -99,6 +104,11 @@ if [ -n "$failed" ]; then
 fi
 # En el mismo argumento que rm, como la lectura de arriba: Git Bash en Windows convierte un argumento que empieza con / en ruta de Windows.
 adb -s "$TV" shell "rm -f $LIST"
+# Quita KeyService de los servicios de accesibilidad antes de desinstalar (ver install.sh).
+on=$(adb -s "$TV" shell settings get secure enabled_accessibility_services 2>/dev/null | tr -d '\r') || on=
+left=$(printf '%s' "$on" | tr ':' '\n' | grep -vx 'com.ansub.tvhome/com.ansub.tvhome.KeyService' | paste -sd: -)
+case "$left" in "") adb -s "$TV" shell settings delete secure enabled_accessibility_services >/dev/null 2>&1 || true ;;
+  *) adb -s "$TV" shell settings put secure enabled_accessibility_services "$left" >/dev/null 2>&1 || true ;; esac
 adb -s "$TV" uninstall com.ansub.tvhome >/dev/null 2>&1 || true
 adb -s "$TV" shell input keyevent KEYCODE_HOME
 echo "Listo. Tu TV regresó a su propia pantalla de inicio."

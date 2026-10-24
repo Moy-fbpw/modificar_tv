@@ -10,6 +10,7 @@
 #   quitar com.ejemplo.app                     se desinstala solo para tu usuario; para apps que el sistema
 #                                              vuelve a encender. Se regresa con undo.sh o con
 #                                              adb shell cmd package install-existing com.ejemplo.app
+#   restringir com.ejemplo.app                 la app funciona al abrirla, pero no puede correr en segundo plano
 #   global window_animation_scale 0            un ajuste (global, secure o system)
 #   device_config activity_manager max_cached_processes 4
 #
@@ -63,6 +64,14 @@ else
     'sh_tv cmd role add-role-holder --user 0 android.app.role.HOME com.ansub.tvhome; sh_tv cmd package set-home-activity "$ME"'
 fi
 
+# El botón de menú del control lo atiende KeyService (ver install.sh); una actualización puede apagarlo.
+KEYS=com.ansub.tvhome/com.ansub.tvhome.KeyService
+if installed com.ansub.tvhome; then
+  check "El botón de menú abre Configuración" \
+    'sh_tv settings get secure enabled_accessibility_services | tr ":" "\n" | grep -qx "$KEYS"' \
+    'on=$(sh_tv settings get secure enabled_accessibility_services); case "$on" in ""|null) on=$KEYS ;; *) on="$on:$KEYS" ;; esac; sh_tv settings put secure enabled_accessibility_services "$on"; sh_tv settings put secure accessibility_enabled 1'
+fi
+
 if [ -n "$LIST" ]; then
   ANTES=$LIST.antes
   # Anota cómo estaba algo antes de cambiarlo, salvo que ya esté anotado. La clave es todo menos el valor.
@@ -75,6 +84,11 @@ if [ -n "$LIST" ]; then
     case "$kind" in
       off|apagar)
         if installed "$a"; then check "$a sigue apagada" "is_off $a" "save 'apagar $a' && sh_tv pm disable-user --user 0 $a"
+        else echo "  no está  $a (no instalada)"; fi ;;
+      restringir)
+        if installed "$a"; then
+          check "$a sigue restringida" "sh_tv cmd appops get $a RUN_ANY_IN_BACKGROUND | grep -q ignore" \
+            "save 'restringir $a' && sh_tv cmd appops set $a RUN_ANY_IN_BACKGROUND ignore"
         else echo "  no está  $a (no instalada)"; fi ;;
       quitar)
         if sh_tv pm list packages -u "$a" | grep -qx "package:$a"; then

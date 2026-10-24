@@ -14,6 +14,7 @@ BT=$SDK/build-tools/34.0.0; JAR=$SDK/platforms/android-34/android.jar
 [ -f "$JAR" ] && [ -d "$BT" ] || { echo "No se encontró el Android SDK. Define ANDROID_HOME e instala platforms;android-34 y build-tools;34.0.0." >&2; exit 1; }
 
 rm -rf out; mkdir -p out/classes out/dex out/gen/com/ansub/tvhome
+"$BT/aapt2" compile --dir res -o out/res.zip
 
 # Convierte la lista de apps en Apps.java.
 {
@@ -23,7 +24,7 @@ rm -rf out; mkdir -p out/classes out/dex out/gen/com/ansub/tvhome
   echo "}; }"
 } > out/gen/com/ansub/tvhome/Apps.java
 
-"$BT/aapt2" link -o out/base.apk -I "$JAR" --manifest AndroidManifest.xml --min-sdk-version 21 --target-sdk-version 34
+"$BT/aapt2" link -o out/base.apk -I "$JAR" --manifest AndroidManifest.xml out/res.zip --min-sdk-version 21 --target-sdk-version 34
 # shellcheck disable=SC2046 # javac y d8 quieren un argumento por archivo, así que la lista se separa a propósito
 javac -nowarn -Xlint:-options -encoding UTF-8 -source 1.8 -target 1.8 -bootclasspath "$JAR:$BT/core-lambda-stubs.jar" \
   -d out/classes $(find src out/gen -name "*.java")

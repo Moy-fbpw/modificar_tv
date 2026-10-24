@@ -66,6 +66,17 @@ if [ "$(sh_tv getprop ro.build.version.sdk)" -ge 29 ]; then
 fi
 sh_tv cmd package set-home-activity "$ME" >/dev/null 2>&1 || true
 
+# El botón de menú (tres rayas) del control manda ALL_APPS, que Android solo le da a la pantalla de inicio
+# de fábrica. KeyService, un servicio de accesibilidad de esta app, lo atiende y abre la Configuración.
+KEYS=com.ansub.tvhome/com.ansub.tvhome.KeyService
+on=$(sh_tv settings get secure enabled_accessibility_services 2>/dev/null) || on=
+case ":$on:" in
+  *":$KEYS:"*) ;;
+  *) case "$on" in ""|null) on=$KEYS ;; *) on="$on:$KEYS" ;; esac
+     sh_tv settings put secure enabled_accessibility_services "$on" >/dev/null 2>&1 || true
+     sh_tv settings put secure accessibility_enabled 1 >/dev/null 2>&1 || true ;;
+esac
+
 # Pantallas de inicio conocidas que se pueden apagar sin riesgo.
 LAUNCHERS="com.google.android.tvlauncher com.google.android.apps.tv.launcherx com.google.android.leanbacklauncher
   com.mitv.tvhome com.amazon.tv.launcher"

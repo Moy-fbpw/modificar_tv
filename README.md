@@ -18,7 +18,7 @@ Uso personal. Basado en el proyecto tv-detox (commit `2ac1ee6`, versión 1.5.3),
 | `medir.sh` | Mide memoria libre, procesos, apps que arrancan solas, arranque, despertar de la suspensión y cuánto tardan en abrir tus apps. Guarda cada medición en `mediciones.tsv`. |
 | `mi-tv.ejemplo.txt` | Plantilla de tu lista de cambios, con los ajustes de rendimiento típicos. |
 | `apps.txt` | Apps de la fila principal de la pantalla de inicio. |
-| `src/`, `AndroidManifest.xml` | Código de la pantalla de inicio. No pide permiso de internet. |
+| `src/`, `res/`, `AndroidManifest.xml` | Código de la pantalla de inicio (con indicador de RAM libre). No pide permiso de internet. Incluye `KeyService`, un servicio de accesibilidad que solo ve el botón de apps del control y abre la Configuración; `install.sh` lo activa. |
 
 ## Lo que necesitas
 

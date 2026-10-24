@@ -151,6 +151,13 @@ public class MainActivity extends Activity {
     // label change, so nothing is rebuilt.
     private ImageView netIcon;
     private int netState = -1;
+    // Free RAM under the icons at the top right, read every few seconds while Home is in front. Only the
+    // total: Android doesn't let an app see other apps' memory or the CPU.
+    private TextView ramText;
+    private final android.os.Handler ticker = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable ramTick = new Runnable() {
+        @Override public void run() { refreshRam(); ticker.postDelayed(this, 5000); }
+    };
     private final ConnectivityManager.NetworkCallback networkChanged = new ConnectivityManager.NetworkCallback() {
         @Override public void onAvailable(Network n) { runOnUiThread(MainActivity.this::refreshNetwork); }
         @Override public void onLost(Network n) { runOnUiThread(MainActivity.this::refreshNetwork); }
@@ -193,6 +200,12 @@ public class MainActivity extends Activity {
         tp.topMargin = px(-20); // pull the big digits up under the date
         clock.addView(time, tp);
         root.addView(clock, at(px(MARGIN), px(92), -2, -2));
+
+        ramText = text(px(24), 0xA8FFFFFF, regular);
+        FrameLayout.LayoutParams rp = new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.END);
+        rp.rightMargin = px(MARGIN);
+        rp.topMargin = px(ICON_TOP + ICON_BUTTON + 8);
+        root.addView(ramText, rp);
 
         moveHint = text(px(24), 0xA8FFFFFF, regular);
         moveHint.setText(Strings.t("Use the arrows to move it, then press OK"));
@@ -289,8 +302,24 @@ public class MainActivity extends Activity {
             buildTiles();
         }
         refreshNetwork();
+        ticker.removeCallbacks(ramTick);
+        ticker.post(ramTick);
         View f = getCurrentFocus();
         if (f == null && !tiles.isEmpty()) tiles.get(0).requestFocus();
+    }
+
+    @Override
+    protected void onPause() {
+        ticker.removeCallbacks(ramTick);
+        super.onPause();
+    }
+
+    private void refreshRam() {
+        android.app.ActivityManager am = (android.app.ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (am == null || ramText == null) return;
+        android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+        am.getMemoryInfo(mi);
+        ramText.setText(Strings.t("Free RAM") + "  " + (mi.availMem >> 20) + " / " + (mi.totalMem >> 20) + " MB");
     }
 
     // Back from a menu or a window on top (like the uninstall prompt): catch up on apps that changed.
