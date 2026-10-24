@@ -2,8 +2,7 @@
 # Las apps que no estén instaladas se saltan.
 # ¿No sabes el nombre de paquete? Pregúntale a Claude: «¿Cuál es el nombre de paquete de <app> en mi TV?»
 com.google.android.youtube.tv
-com.netflix.ninja
+com.crunchyroll.crunchyroid
 com.amazon.amazonvideo.livingroom
 com.disney.disneyplus
-com.hulu.livingroomplus
 com.wbd.stream
