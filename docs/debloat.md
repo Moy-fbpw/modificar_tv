@@ -165,6 +165,10 @@ cuando se prueben en tu TV. Si tu Hisense dice VIDAA, no es Android y nada de es
 | `com.jamdeo.tv.livetv`, `com.jamdeo.tv.vod` | TV en vivo y launcher de fábrica en algunos modelos |
 | `com.google.android.tvlauncher` | launcher original: es el respaldo de `undo.sh` |
 
+Confirmado en una 40A45H (Android TV 14, firmware `huashan`, MT5867): no trae smartsense/AIoT, y
+`com.netflix.ninja` y `com.google.android.tvrecommendations` se vuelven a encender solas en cada arranque
+(a Netflix la reactiva `NetflixObserver`, dentro de `com.mediatek.tv.service`). No vale la pena apagarlas.
+
 ### Comúnmente apagadas en Hisense
 
 | paquete | qué es |

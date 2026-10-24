@@ -4,17 +4,20 @@
 #   sh undo.sh <IP_TV> mi-tv.txt            regresa todo a como estaba
 # Una línea por cambio. # inicia un comentario.
 
-# Sin animaciones: los menús responden al instante. (Pendiente: tanda de ajustes.)
-# global window_animation_scale 0
-# global transition_animation_scale 0
-# global animator_duration_scale 0
+# Sin animaciones: los menús responden al instante. (Tanda 2.)
+global window_animation_scale 0
+global transition_animation_scale 0
+global animator_duration_scale 0
+
+# Protector básico (colores) en vez de Backdrop, que quedó apagado en la tanda 1. (Tanda 2.)
+secure screensaver_components com.android.dreams.basic/.Colors
 
 # Suspender la TV tras 30 minutos sin uso (en milisegundos). En Android TV vive en «secure»;
 # revisa que tu TV lo tenga con: adb shell settings get secure sleep_timeout
 # secure sleep_timeout 1800000
 
 # Tanda 1 (2026-10-23): relleno de Google y Hisense, y apps viejas.
-apagar com.google.android.tvrecommendations
+# apagar com.google.android.tvrecommendations   (no se queda: el sistema la vuelve a encender al arrancar)
 apagar com.google.android.backdrop
 apagar com.google.android.feedback
 apagar com.google.android.play.games
@@ -25,3 +28,13 @@ apagar com.mstar.android.tv.disclaimercustomization
 apagar android.autoinstalls.config.hisense
 apagar com.hbo.hbonow
 apagar com.disney.starplus
+
+# Tanda 2 (2026-10-23): apps que no uso. Netflix y Spotify se encienden en Configuración → Apps si hacen falta.
+# apagar com.netflix.ninja   (no se queda: NetflixObserver de MediaTek la vuelve a encender al arrancar)
+apagar com.spotify.tv.android
+apagar com.google.android.youtube.tvmusic
+apagar com.dazn
+apagar com.viki.android
+apagar com.tencent.qqlivei18n
+apagar com.clearchannel.iheartradio.tv
+apagar com.uscreen.karaokeondemand

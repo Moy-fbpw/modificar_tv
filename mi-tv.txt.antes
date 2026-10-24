@@ -9,3 +9,15 @@ apagar com.mstar.android.tv.disclaimercustomization
 apagar android.autoinstalls.config.hisense
 apagar com.hbo.hbonow
 apagar com.disney.starplus
+global window_animation_scale 1.0
+global transition_animation_scale 1.0
+global animator_duration_scale 0.6
+secure screensaver_components com.google.android.backdrop/.Backdrop
+apagar com.netflix.ninja
+apagar com.spotify.tv.android
+apagar com.google.android.youtube.tvmusic
+apagar com.dazn
+apagar com.viki.android
+apagar com.tencent.qqlivei18n
+apagar com.clearchannel.iheartradio.tv
+apagar com.uscreen.karaokeondemand
