@@ -1,0 +1,6 @@
+fecha	etiqueta	memoria_libre_mb	memoria_total_mb	procesos	carga	apps_encendidas	apps_al_arrancar	arranque_s	despertar_ms	internet_tras_despertar_ms	despertar_y_abrir_ms	salir_protector_ms	inicio_tras_protector_ms	protector_y_abrir_ms	apertura_ms
+2026-10-23 19:24	antes	289	913	549	58.32	155	56	64	708	1252	5496	-	-	-	com.crunchyroll.crunchyroid=- com.google.android.youtube.tv=4904 com.amazon.amazonvideo.livingroom=- com.disney.disneyplus=1760
+2026-10-23 19:27	antes (Crunchyroll y Prime)	270	913	593	57.60	155	56	-	-	-	-	-	-	-	com.crunchyroll.crunchyroid=5645 com.amazon.amazonvideo.livingroom=1278
+2026-10-23 19:41	antes (completa)	243	913	498	50.17	155	56	64	-	-	-	-	-	-	com.crunchyroll.crunchyroid=2599 com.google.android.youtube.tv=781 com.amazon.amazonvideo.livingroom=1190 com.disney.disneyplus=1594
+2026-10-23 19:43	antes (protector)	226	913	498	51.86	155	56	-	-	-	-	-	-	-	com.crunchyroll.crunchyroid=4047
+2026-10-23 19:46	antes (protector)	197	913	433	52.37	155	56	-	-	-	-	1850	2111	6288	com.crunchyroll.crunchyroid=2952

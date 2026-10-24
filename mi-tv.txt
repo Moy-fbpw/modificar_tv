@@ -1,0 +1,27 @@
+# Mi TV: Hisense 40A45H (hayward, firmware huashan, MT5867), Android TV 14. Hecha desde mi-tv.ejemplo.txt:
+#   cp mi-tv.ejemplo.txt mi-tv.txt
+#   sh check.sh <IP_TV> --fix mi-tv.txt     aplica los cambios y anota cómo estaba todo en mi-tv.txt.antes
+#   sh undo.sh <IP_TV> mi-tv.txt            regresa todo a como estaba
+# Una línea por cambio. # inicia un comentario.
+
+# Sin animaciones: los menús responden al instante. (Pendiente: tanda de ajustes.)
+# global window_animation_scale 0
+# global transition_animation_scale 0
+# global animator_duration_scale 0
+
+# Suspender la TV tras 30 minutos sin uso (en milisegundos). En Android TV vive en «secure»;
+# revisa que tu TV lo tenga con: adb shell settings get secure sleep_timeout
+# secure sleep_timeout 1800000
+
+# Tanda 1 (2026-10-23): relleno de Google y Hisense, y apps viejas.
+apagar com.google.android.tvrecommendations
+apagar com.google.android.backdrop
+apagar com.google.android.feedback
+apagar com.google.android.play.games
+apagar com.google.android.videos
+apagar com.android.htmlviewer
+apagar fusion.android.tv.demo
+apagar com.mstar.android.tv.disclaimercustomization
+apagar android.autoinstalls.config.hisense
+apagar com.hbo.hbonow
+apagar com.disney.starplus
